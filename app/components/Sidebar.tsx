@@ -19,42 +19,42 @@ interface SidebarProps {
 
 const Sidebar = ({ activeView, onNavigate }: SidebarProps) => {
   return (
-    <aside className="w-60 bg-white flex flex-col h-screen sticky top-0 z-20">
+    <aside className="w-56 bg-white flex flex-col h-screen sticky top-0 z-20">
       {/* White Logo Header */}
-      <div className="px-6 py-8 shrink-0">
-        <div className="flex items-center gap-2.5">
-          <Building size={24} className="text-[#1E3A5F] fill-[#1E3A5F]" />
-          <h1 className="text-xl font-black tracking-tight text-[#1E3A5F]">EstateX</h1>
+      <div className="px-5 py-6 shrink-0">
+        <div className="flex items-center gap-2">
+          <Building size={20} className="text-[#1E3A5F] fill-[#1E3A5F]" />
+          <h1 className="text-lg font-black tracking-tight text-[#1E3A5F]">EstateX</h1>
         </div>
       </div>
 
       {/* Blue Main Nav Area */}
-      <div className="flex-1 bg-[#1E3A5F] m-0 rounded-tr-[40px] flex flex-col p-4 overflow-hidden">
-        <button className="bg-white text-[#1E3A5F] py-3 px-6 rounded-full font-bold shadow-lg hover:shadow-2xl transition-all duration-300 mb-6 text-[13px] flex items-center justify-center gap-2 group shrink-0 transform hover:-translate-y-1">
-          <Plus size={16} className="group-hover:rotate-90 transition-transform" />
+      <div className="flex-1 bg-[#1E3A5F] m-0 rounded-tr-[32px] flex flex-col p-3 overflow-hidden">
+        <button className="bg-white text-[#1E3A5F] py-2.5 px-5 rounded-full font-bold shadow-md hover:shadow-xl transition-all duration-300 mb-5 text-[12px] flex items-center justify-center gap-2 group shrink-0 transform hover:-translate-y-1">
+          <Plus size={14} className="group-hover:rotate-90 transition-transform" />
           Invest Now
         </button>
 
         <nav className="flex-1 space-y-0.5 overflow-y-auto pr-1.5 custom-scrollbar -mr-1.5">
           {[
-            { icon: <Layout size={18} />, label: "Dashboard", id: "dashboard" },
-            { icon: <Building size={18} />, label: "Marketplace", id: "marketplace" },
-            { icon: <PieChart size={18} />, label: "My Portfolio", id: "portfolio" },
-            { icon: <Wallet size={18} />, label: "Transactions", id: "transactions" },
-            { icon: <FileText size={18} />, label: "Legal Documents", id: "documents" },
-            { icon: <Users size={18} />, label: "Governance", id: "governance" },
+            { icon: <Layout size={16} />, label: "Dashboard", id: "dashboard" },
+            { icon: <Building size={16} />, label: "Marketplace", id: "marketplace" },
+            { icon: <PieChart size={16} />, label: "My Portfolio", id: "portfolio" },
+            { icon: <Wallet size={16} />, label: "Transactions", id: "transactions" },
+            { icon: <FileText size={16} />, label: "Legal Documents", id: "documents" },
+            { icon: <Users size={16} />, label: "Governance", id: "governance" },
           ].map((item, i) => (
             <div
               key={i}
               onClick={() => onNavigate(item.id)}
-              className={`flex items-center gap-3.5 p-2.5 rounded-xl cursor-pointer transition-all duration-200 group ${
+              className={`flex items-center gap-2.5 p-2 rounded-lg cursor-pointer transition-all duration-200 group ${
                 activeView === item.id 
                   ? "bg-white/10 text-white backdrop-blur-sm border border-white/10" 
                   : "hover:bg-white/5 opacity-80 hover:opacity-100 text-white"
               }`}
             >
-              <span>{item.icon}</span>
-              <span className="font-semibold text-[13.5px]">{item.label}</span>
+              <span className="opacity-70 group-hover:opacity-100">{item.icon}</span>
+              <span className="font-semibold text-[12.5px]">{item.label}</span>
             </div>
           ))}
         </nav>

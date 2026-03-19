@@ -6,6 +6,10 @@ import Header from "./components/Header";
 import QuickAccess from "./components/QuickAccess";
 import FilesTable from "./components/FilesTable";
 import Marketplace from "./components/Marketplace";
+import Portfolio from "./components/Portfolio";
+import Governance from "./components/Governance";
+import Transactions from "./components/Transactions";
+import LegalDocuments from "./components/LegalDocuments";
 
 export default function Home() {
   const [currentView, setCurrentView] = useState("dashboard");
@@ -14,6 +18,14 @@ export default function Home() {
     switch (currentView) {
       case "marketplace":
         return <Marketplace />;
+      case "portfolio":
+        return <Portfolio />;
+      case "governance":
+        return <Governance />;
+      case "transactions":
+        return <Transactions />;
+      case "documents":
+        return <LegalDocuments />;
       case "dashboard":
       default:
         return (
