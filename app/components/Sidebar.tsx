@@ -87,7 +87,7 @@ const Sidebar = ({ activeView, onNavigate }: SidebarProps) => {
                   <p className="text-[12px] font-bold text-white">Est. ROI</p>
                 </div>
                 <div className="w-full h-1 bg-white/10 rounded-full overflow-hidden mb-1">
-                  <div className="bg-green-400 h-full w-[12%] shadow-[0_0_8px_rgba(74,222,128,0.5)]" />
+                  <div className="bg-white h-full w-[12%] shadow-[0_0_8px_rgba(255,255,255,0.35)]" />
                 </div>
                 <p className="text-[9px] font-medium opacity-40 leading-none text-white">+12.4% Annual</p>
               </div>

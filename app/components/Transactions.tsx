@@ -21,24 +21,24 @@ const transactions = [
 
 const Transactions = () => {
   return (
-    <div className="flex-1 flex flex-col h-full bg-[#FDFDFD] overflow-hidden pt-8 px-5 pb-5 custom-scrollbar overflow-y-auto transition-all duration-300">
+    <div className="flex-1 flex flex-col h-full bg-white overflow-hidden pt-8 px-5 pb-5 custom-scrollbar overflow-y-auto transition-all duration-300">
       
       {/* Top Row: Summary Stats */}
       <div className="flex items-center justify-between mb-4 gap-2">
         <div className="flex gap-1.5 shrink-0">
-           <div className="bg-black text-white px-3.5 py-2 rounded-[16px] min-w-[120px] shadow-lg relative overflow-hidden group">
-              <p className="text-[7.5px] font-black opacity-40 uppercase tracking-widest mb-0.5">Total Volume</p>
+           <div className="bg-[#1E3A5F] text-white px-3.5 py-2 rounded-[16px] min-w-[120px] shadow-lg relative overflow-hidden group">
+              <p className="text-[7.5px] font-black opacity-60 uppercase tracking-widest mb-0.5">Total Volume</p>
               <p className="text-base font-black italic">70%</p>
-              <div className="absolute right-0 top-0 bottom-0 w-1/3 bg-white/5 skew-x-12 group-hover:bg-white/10 transition-all" />
+              <div className="absolute right-0 top-0 bottom-0 w-1/3 bg-white/10 skew-x-12 group-hover:bg-white/15 transition-all" />
            </div>
-           <div className="bg-yellow-400 text-black px-3.5 py-2 rounded-[16px] min-w-[80px] shadow-md border border-yellow-500/20">
-              <p className="text-[7.5px] font-black opacity-40 uppercase tracking-widest mb-0.5">Hired</p>
+           <div className="bg-[#1E3A5F]/10 text-[#1E3A5F] px-3.5 py-2 rounded-[16px] min-w-[80px] shadow-sm border border-[#1E3A5F]/15">
+              <p className="text-[7.5px] font-black opacity-50 uppercase tracking-widest mb-0.5">Hired</p>
               <p className="text-base font-black italic">10%</p>
            </div>
-           <div className="bg-white/40 border border-white/60 backdrop-blur-md text-black px-3.5 py-2 rounded-[16px] min-w-[80px] shadow-sm relative overflow-hidden">
+           <div className="bg-slate-50 border border-slate-200 text-gray-900 px-3.5 py-2 rounded-[16px] min-w-[80px] shadow-sm relative overflow-hidden">
               <p className="text-[7.5px] font-black opacity-40 uppercase tracking-widest mb-0.5">Project Time</p>
               <p className="text-base font-black italic">15%</p>
-              <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'repeating-linear-gradient(45deg, #000 0, #000 1px, transparent 0, transparent 10px)' }} />
+              <div className="absolute inset-0 opacity-[0.08]" style={{ backgroundImage: 'repeating-linear-gradient(45deg, #1E3A5F 0, #1E3A5F 1px, transparent 0, transparent 10px)' }} />
            </div>
            <div className="bg-white border border-gray-100 text-black px-3.5 py-2 rounded-[16px] min-w-[80px] shadow-sm">
               <p className="text-[7.5px] font-black opacity-40 uppercase tracking-widest mb-0.5">Output</p>
@@ -104,20 +104,20 @@ const Transactions = () => {
               
               <div className="space-y-10">
                 {[
-                  { time: "09:00", title: "Monthly Yield Sync", desc: "09:30am - 10:00am", active: true, color: "bg-gray-800 text-white" },
+                  { time: "09:00", title: "Monthly Yield Sync", desc: "09:30am - 10:00am", active: true, color: "bg-[#1E3A5F] text-white" },
                   { time: "11:00", title: "Kigali Heights Audit", desc: "10:30am - 11:30am", active: false, color: "bg-white text-gray-900 border border-gray-100" },
                   { time: "12:00", title: "Dividend distribution", desc: "12:00pm - 01:00pm", active: false, color: "bg-white text-gray-900 border border-gray-100" },
                   { time: "01:00", title: "Liquidity Check", desc: "01:30pm - 02:00pm", active: false, color: "bg-white text-gray-900 border border-gray-100" },
                 ].map((item, i) => (
                   <div key={i} className="flex gap-6 items-start relative z-10">
-                    <div className={`w-7 h-7 rounded-full border flex items-center justify-center shrink-0 text-[8px] font-black tracking-tighter ${item.active ? 'bg-yellow-400 border-yellow-400 text-black' : 'bg-white border-gray-100 text-gray-400'}`}>
+                    <div className={`w-7 h-7 rounded-full border flex items-center justify-center shrink-0 text-[8px] font-black tracking-tighter ${item.active ? 'bg-[#1E3A5F] border-[#1E3A5F] text-white' : 'bg-white border-gray-100 text-gray-400'}`}>
                        {item.time}
                     </div>
                     <div className={`${item.color} p-3 rounded-[18px] shadow-sm flex-1 group transition-all hover:shadow-md cursor-pointer`}>
                        <h4 className="text-[11px] font-black mb-0.5">{item.title}</h4>
                        <p className="text-[9px] font-bold opacity-60 tracking-tight">{item.desc}</p>
                        {item.active && (
-                         <div className="w-1.5 h-1.5 rounded-full bg-yellow-400 absolute top-4 right-4 animate-pulse" />
+                         <div className="w-1.5 h-1.5 rounded-full bg-white absolute top-4 right-4 animate-pulse" />
                        )}
                     </div>
                   </div>
@@ -138,7 +138,7 @@ const Transactions = () => {
                        <input 
                          type="text" 
                          placeholder="Search records..." 
-                         className="bg-gray-50 border border-gray-100 rounded-full py-1.5 pl-9 pr-6 text-[10px] font-bold focus:outline-none focus:border-black/10 w-40 transition-all"
+                         className="bg-gray-50 border border-gray-100 rounded-full py-1.5 pl-9 pr-6 text-[10px] font-bold focus:outline-none focus:border-[#1E3A5F]/30 w-40 transition-all"
                        />
                     </div>
                     <button className="bg-gray-100 p-2 rounded-full text-gray-900 hover:bg-gray-200 transition-all">
@@ -165,7 +165,7 @@ const Transactions = () => {
                            <td className="px-4 py-4"><input type="checkbox" className="rounded" defaultChecked={tx.id === 2} /></td>
                            <td className="px-4 py-4">
                               <div className="flex items-center gap-3">
-                                 <div className="w-8 h-8 rounded-full bg-gray-900 overflow-hidden flex items-center justify-center text-white text-[10px]">
+                                 <div className="w-8 h-8 rounded-full bg-[#1E3A5F] overflow-hidden flex items-center justify-center text-white text-[10px]">
                                     {tx.name[0]}
                                  </div>
                                  <span className="text-[11px] font-black text-gray-900">{tx.name}</span>
@@ -175,9 +175,9 @@ const Transactions = () => {
                            <td className="px-4 py-3 text-[11px] font-black text-gray-900">{tx.amount}</td>
                            <td className="px-4 py-3">
                               <div className={`mx-auto w-fit px-2 py-0.5 rounded-full text-[9px] font-black capitalize ${
-                                tx.color === 'purple' ? 'bg-purple-100 text-purple-600' : 
-                                tx.color === 'green' ? 'bg-green-100 text-green-600' : 
-                                'bg-gray-100 text-gray-400'
+                                tx.color === 'purple' ? 'bg-[#1E3A5F]/10 text-[#1E3A5F]' : 
+                                tx.color === 'green' ? 'bg-slate-100 text-slate-600' : 
+                                'bg-gray-100 text-gray-500'
                               }`}>
                                 {tx.status}
                               </div>
@@ -194,8 +194,8 @@ const Transactions = () => {
               <div className="flex justify-between items-center mb-4">
                  <h3 className="text-[12px] font-black text-gray-900 tracking-[0.1em] uppercase">Historical</h3>
                  <div className="flex gap-3 text-[8px] font-black uppercase tracking-widest">
-                    <span className="text-yellow-400 flex items-center gap-1.5"><Circle size={6} className="fill-yellow-400" /> Capital</span>
-                    <span className="text-gray-900 flex items-center gap-1.5"><Circle size={6} className="fill-gray-900" /> Yield</span>
+                    <span className="text-[#1E3A5F] flex items-center gap-1.5"><Circle size={6} className="fill-[#1E3A5F]" /> Capital</span>
+                    <span className="text-slate-500 flex items-center gap-1.5"><Circle size={6} className="fill-slate-400" /> Yield</span>
                     <select className="bg-transparent border-none outline-none cursor-pointer">
                       <option>2024</option>
                     </select>
@@ -209,14 +209,14 @@ const Transactions = () => {
                   <path 
                     d="M0 60 Q 50 20, 100 80 T 200 40 T 300 90 T 400 30 T 500 70" 
                     fill="none" 
-                    stroke="black" 
+                    stroke="#1E3A5F" 
                     strokeWidth="2" 
                     strokeDasharray="4 6"
                   />
                   <path 
                     d="M0 80 Q 50 50, 100 110 T 200 70 T 300 120 T 400 60 T 500 100" 
                     fill="none" 
-                    stroke="#FACC15" 
+                    stroke="#5b7aad" 
                     strokeWidth="2" 
                     strokeDasharray="4 6"
                   />
@@ -229,7 +229,7 @@ const Transactions = () => {
                  ))}
               </div>
 
-              <div className="absolute left-[40%] top-[40%] bg-black text-white px-3 py-1.5 rounded-full text-[10px] font-black shadow-2xl scale-0 group-hover:scale-100 transition-transform origin-bottom">
+              <div className="absolute left-[40%] top-[40%] bg-[#1E3A5F] text-white px-3 py-1.5 rounded-full text-[10px] font-black shadow-2xl scale-0 group-hover:scale-100 transition-transform origin-bottom">
                  Growth: +12.4%
               </div>
            </div>
@@ -238,7 +238,7 @@ const Transactions = () => {
         {/* Right: Dot Report & Composition */}
         <div className="lg:col-span-3 flex flex-col gap-5">
            {/* Dot Grid Report */}
-           <div className="bg-[#1C1C1E] rounded-[32px] p-6 text-white shadow-xl flex-1 relative overflow-hidden group">
+           <div className="bg-[#1E3A5F] rounded-[32px] p-6 text-white shadow-xl flex-1 relative overflow-hidden group">
               <div className="flex justify-between items-center mb-6">
                  <h3 className="text-[13px] font-black tracking-tight">Market Activity</h3>
                  <button className="bg-white/10 p-2 rounded-full text-white/50 hover:text-white transition-all">
@@ -248,7 +248,7 @@ const Transactions = () => {
               
               <div className="flex gap-3 mb-3">
                  <div>
-                   <p className="text-2xl font-black flex items-center gap-1.5">63 <ArrowUpRight size={18} className="text-yellow-400" /></p>
+                   <p className="text-2xl font-black flex items-center gap-1.5">63 <ArrowUpRight size={18} className="text-white/90" /></p>
                    <p className="text-[8px] font-bold opacity-40 uppercase">Buys</p>
                  </div>
                  <div>
@@ -260,7 +260,7 @@ const Transactions = () => {
               {/* Dot Matrix Grid */}
               <div className="grid grid-cols-12 gap-1.5 mt-8 opacity-40 group-hover:opacity-100 transition-opacity">
                  {Array.from({ length: 60 }).map((_, i) => (
-                   <div key={i} className={`w-1.5 h-1.5 rounded-full ${i % 7 === 0 ? 'bg-yellow-400' : 'bg-white/20'}`} />
+                   <div key={i} className={`w-1.5 h-1.5 rounded-full ${i % 7 === 0 ? 'bg-white' : 'bg-white/25'}`} />
                  ))}
               </div>
            </div>
@@ -277,7 +277,7 @@ const Transactions = () => {
                       cy="48" 
                       r="40" 
                       fill="transparent" 
-                      stroke="#000" 
+                      stroke="#1E3A5F" 
                       strokeWidth="8" 
                       strokeDasharray="251" 
                       strokeDashoffset="80" 
@@ -291,7 +291,7 @@ const Transactions = () => {
               </div>
 
               <div className="flex justify-center gap-4 text-[9px] font-black tracking-tight">
-                 <span className="flex items-center gap-1.5"><div className="w-1.5 h-1.5 rounded-full bg-black" /> 70% Crypto</span>
+                 <span className="flex items-center gap-1.5"><div className="w-1.5 h-1.5 rounded-full bg-[#1E3A5F]" /> 70% Crypto</span>
                  <span className="flex items-center gap-1.5"><div className="w-1.5 h-1.5 rounded-full bg-gray-200" /> 30% FIAT</span>
               </div>
            </div>

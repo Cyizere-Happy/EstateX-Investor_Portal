@@ -35,7 +35,7 @@ const PropertyCard = ({ property }: { property: Property }) => {
         </button>
         <div className="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/60 to-transparent">
           <div className="flex items-center gap-1.5 text-white">
-            <Star size={12} className="text-yellow-400 fill-yellow-400" />
+            <Star size={12} className="text-[#1E3A5F] fill-[#1E3A5F]/20" />
             <span className="text-[11px] font-bold">{property.rating}</span>
             <span className="text-[10px] opacity-60">({property.reviews})</span>
           </div>
@@ -56,7 +56,7 @@ const PropertyCard = ({ property }: { property: Property }) => {
         <div className="grid grid-cols-2 gap-3 mb-4">
           <div className="bg-gray-50 p-2 rounded-xl">
             <p className="text-[9px] font-black text-gray-400 uppercase tracking-wider mb-0.5">EST. ROI</p>
-            <p className="text-[13px] font-black text-green-600">{property.roi}</p>
+            <p className="text-[13px] font-black text-[#1E3A5F]">{property.roi}</p>
           </div>
           <div className="bg-gray-50 p-2 rounded-xl">
             <p className="text-[9px] font-black text-gray-400 uppercase tracking-wider mb-0.5">FUNDING</p>

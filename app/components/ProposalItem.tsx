@@ -18,7 +18,7 @@ const SegmentedProgress = ({ completed, total }: { completed: number; total: num
         <div 
           key={i} 
           className={`w-1.5 h-4 rounded-full transition-all duration-500 ${
-            i < completed ? 'bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.5)]' : 'bg-gray-100'
+            i < completed ? 'bg-[#1E3A5F] shadow-[0_0_8px_rgba(30,58,95,0.35)]' : 'bg-gray-100'
           }`}
         />
       ))}

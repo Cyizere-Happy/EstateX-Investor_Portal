@@ -31,7 +31,7 @@ const Marketplace = () => {
   const [showMap, setShowMap] = useState(true);
 
   return (
-    <div className="flex-1 flex flex-col h-full bg-gray-50/50">
+    <div className="flex-1 flex flex-col h-full bg-white">
       {/* Top Filter Bar */}
       <div className="bg-white border-b border-gray-100 px-8 py-3.5 flex items-center justify-between sticky top-0 z-30">
         <div className="flex items-center gap-4 flex-1 max-w-2xl">

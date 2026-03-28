@@ -38,7 +38,7 @@ export default function Home() {
   };
 
   return (
-    <div className="flex h-screen bg-gray-50 font-jost overflow-hidden">
+    <div className="flex h-screen bg-white font-jost overflow-hidden">
       <Sidebar activeView={currentView} onNavigate={setCurrentView} />
       
       <div className="flex-1 flex flex-col min-w-0">

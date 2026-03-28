@@ -21,35 +21,35 @@ const FilesTable = () => {
       location: "Kacyiru, Kigali", 
       roi: "14.2%", 
       funding: "85%", 
-      icon: <Building size={20} className="text-blue-600" /> 
+      icon: <Building size={20} className="text-[#1E3A5F]" /> 
     },
     { 
       name: "Vision City Phase II", 
       location: "Gacuriro, Kigali", 
       roi: "12.8%", 
       funding: "62%", 
-      icon: <Building size={20} className="text-green-600" /> 
+      icon: <Building size={20} className="text-[#1E3A5F]" /> 
     },
     { 
       name: "Nyagatare Trade Center", 
       location: "Nyagatare, Eastern", 
       roi: "15.5%", 
       funding: "34%", 
-      icon: <Building size={20} className="text-orange-600" /> 
+      icon: <Building size={20} className="text-[#1E3A5F]" /> 
     },
     { 
       name: "Rubavu Waterfront Resort", 
       location: "Rubavu, Western", 
       roi: "11.2%", 
       funding: "91%", 
-      icon: <Building size={20} className="text-cyan-600" /> 
+      icon: <Building size={20} className="text-[#1E3A5F]" /> 
     },
     { 
       name: "Gahanga Housing Estate", 
       location: "Kicukiro, Kigali", 
       roi: "13.5%", 
       funding: "100%", 
-      icon: <Building size={20} className="text-indigo-600" /> 
+      icon: <Building size={20} className="text-[#1E3A5F]" /> 
     },
   ];
 
@@ -95,7 +95,7 @@ const FilesTable = () => {
               
               <span className="text-[13px] font-bold text-gray-600">{project.location}</span>
 
-              <span className="text-[13px] font-bold text-green-600 bg-green-50 px-2 py-1 rounded-lg w-fit">{project.roi}</span>
+              <span className="text-[13px] font-bold text-[#1E3A5F] bg-[#1E3A5F]/10 px-2 py-1 rounded-lg w-fit">{project.roi}</span>
               
               <div className="flex flex-col gap-1 pr-8">
                 <div className="flex justify-between text-[10px] font-bold text-gray-400">
