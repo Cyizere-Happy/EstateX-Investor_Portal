@@ -21,21 +21,21 @@ import {
 
 const suggestedActions = [
   {
-    icon: <CheckCircle className="text-teal-500" size={18} />,
+    icon: <CheckCircle className="text-[#1E3A5F]" size={18} />,
     title: "Complete Registration",
     desc: "Complete your profile and make the most of EstateX",
     date: "23 Jan, 2026",
     status: null
   },
   {
-    icon: <Lock className="text-teal-500" size={18} />,
+    icon: <Lock className="text-[#1E3A5F]" size={18} />,
     title: "Enable 2-FA Authentication",
     desc: "Add more security to your account by enabling two-step auth",
     date: "23 Jan, 2026",
     status: "Enabled"
   },
   {
-    icon: <Phone className="text-teal-500" size={18} />,
+    icon: <Phone className="text-[#1E3A5F]" size={18} />,
     title: "Update Contact Information",
     desc: "Keep your details up to date to avoid subscription issues",
     date: "23 Jan, 2026",
@@ -60,9 +60,9 @@ const LegalDocuments = () => {
 
   const getIcon = (type: string) => {
     switch(type) {
-      case 'folder': return <Folder size={16} className="text-orange-400 fill-orange-400" />;
-      case 'zip': return <Archive size={16} className="text-orange-500 fill-orange-500" style={{ opacity: 0.8 }} />;
-      case 'pdf': return <FileText size={16} className="text-red-500" />;
+      case 'folder': return <Folder size={16} className="text-[#1E3A5F] fill-[#1E3A5F]/25" />;
+      case 'zip': return <Archive size={16} className="text-[#1E3A5F] fill-[#1E3A5F]/20" style={{ opacity: 0.9 }} />;
+      case 'pdf': return <FileText size={16} className="text-[#1E3A5F]" />;
       case 'doc': return <File size={16} className="text-gray-400" />;
       default: return <File size={16} />;
     }
@@ -70,17 +70,17 @@ const LegalDocuments = () => {
 
   const getStatusStyle = (status: string) => {
     switch(status) {
-      case 'Completed': return 'bg-green-100 text-green-600';
-      case 'Draft': return 'bg-gray-100 text-gray-500';
-      case 'Trash': return 'bg-red-50 text-red-400';
-      case 'Expired': return 'bg-orange-50 text-orange-400';
-      case 'Wait': return 'bg-blue-50 text-blue-400';
+      case 'Completed': return 'bg-[#1E3A5F]/10 text-[#1E3A5F]';
+      case 'Draft': return 'bg-gray-100 text-gray-600';
+      case 'Trash': return 'bg-slate-100 text-slate-500';
+      case 'Expired': return 'bg-slate-50 text-slate-500';
+      case 'Wait': return 'bg-[#1E3A5F]/5 text-[#1E3A5F]';
       default: return 'bg-gray-100 text-gray-400';
     }
   };
 
   return (
-    <div className="flex-1 flex flex-col h-full bg-[#FDFDFD] overflow-hidden pt-6 px-6 pb-6 custom-scrollbar overflow-y-auto transition-all duration-300">
+    <div className="flex-1 flex flex-col h-full bg-white overflow-hidden pt-6 px-6 pb-6 custom-scrollbar overflow-y-auto transition-all duration-300">
       
       {/* Suggested for you */}
       <div className="mb-8">
@@ -89,11 +89,11 @@ const LegalDocuments = () => {
           {suggestedActions.map((action, i) => (
             <div key={i} className="bg-white border border-gray-100 rounded-[20px] p-4 shadow-sm hover:shadow-md transition-all group relative overflow-hidden">
               <div className="flex items-center justify-between mb-3">
-                <div className="w-9 h-9 bg-teal-50 rounded-xl flex items-center justify-center">
+                <div className="w-9 h-9 bg-[#1E3A5F]/8 rounded-xl flex items-center justify-center">
                   {action.icon}
                 </div>
                 {action.status && (
-                  <span className="text-[9px] font-black text-teal-600 bg-teal-50 px-2 py-0.5 rounded-full border border-teal-100">
+                  <span className="text-[9px] font-black text-[#1E3A5F] bg-[#1E3A5F]/8 px-2 py-0.5 rounded-full border border-[#1E3A5F]/15">
                     {action.status}
                   </span>
                 )}
@@ -104,11 +104,11 @@ const LegalDocuments = () => {
               <p className="text-[9px] font-bold text-gray-300">Modified on {action.date}</p>
             </div>
           ))}
-          <div className="bg-gray-50 border border-dashed border-gray-200 rounded-[20px] flex flex-col items-center justify-center p-4 group cursor-pointer hover:bg-white hover:border-teal-300 transition-all">
-             <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm mb-2 text-gray-400 group-hover:text-teal-500 transition-colors">
+          <div className="bg-gray-50 border border-dashed border-gray-200 rounded-[20px] flex flex-col items-center justify-center p-4 group cursor-pointer hover:bg-white hover:border-[#1E3A5F]/30 transition-all">
+             <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm mb-2 text-gray-400 group-hover:text-[#1E3A5F] transition-colors">
                 <Plus size={20} />
              </div>
-             <p className="text-[11px] font-black text-gray-400 group-hover:text-teal-600 transition-colors">Add Suggestion</p>
+             <p className="text-[11px] font-black text-gray-400 group-hover:text-[#1E3A5F] transition-colors">Add Suggestion</p>
           </div>
         </div>
       </div>
@@ -129,11 +129,11 @@ const LegalDocuments = () => {
               key={tab}
               onClick={() => setActiveTab(tab)}
               className={`pb-3 text-[12px] font-black transition-all relative flex items-center gap-2 ${
-                activeTab === tab ? "text-teal-500" : "text-gray-400 hover:text-gray-600"
+                activeTab === tab ? "text-[#1E3A5F]" : "text-gray-400 hover:text-gray-600"
               }`}
             >
               {activeTab === tab && (
-                <div className="absolute bottom-0 left-0 right-0 h-1 bg-teal-500 rounded-t-full" />
+                <div className="absolute bottom-0 left-0 right-0 h-1 bg-[#1E3A5F] rounded-t-full" />
               )}
               {tab === "Todos" && <Files size={14} />}
               {tab === "Sent" && <Send size={14} />}
@@ -198,7 +198,7 @@ const LegalDocuments = () => {
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-2">
-                       <div className="w-6 h-6 rounded-full bg-teal-100 flex items-center justify-center text-[9px] font-black text-teal-600">
+                       <div className="w-6 h-6 rounded-full bg-[#1E3A5F]/10 flex items-center justify-center text-[9px] font-black text-[#1E3A5F]">
                           {doc.recipient[0]}
                        </div>
                        <span className="text-[11px] font-bold text-gray-600">{doc.recipient}</span>

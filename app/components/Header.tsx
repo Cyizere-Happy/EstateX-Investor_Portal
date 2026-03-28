@@ -27,7 +27,7 @@ const Header = () => {
         <div className="flex items-center gap-1.5">
           <button className="text-gray-500 hover:text-[#1E3A5F] p-2 hover:bg-[#1E3A5F]/5 rounded-lg transition-all relative group">
             <Bell size={16} />
-            <span className="absolute top-2 right-2 w-1.5 h-1.5 bg-red-500 rounded-full border-2 border-white group-hover:scale-125 transition-transform"></span>
+            <span className="absolute top-2 right-2 w-1.5 h-1.5 bg-white rounded-full border-2 border-[#1E3A5F] group-hover:scale-125 transition-transform shadow-sm"></span>
           </button>
           <button className="text-gray-500 hover:text-[#1E3A5F] p-2 hover:bg-[#1E3A5F]/5 rounded-lg transition-all">
             <HelpCircle size={16} />

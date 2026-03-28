@@ -30,7 +30,7 @@ const PropertyCard = ({ property }: { property: Property }) => {
             {property.type}
           </span>
         </div>
-        <button className="absolute top-3 right-3 p-2 bg-white/20 backdrop-blur-md hover:bg-white text-white hover:text-red-500 rounded-full transition-all shadow-sm">
+        <button className="absolute top-3 right-3 p-2 bg-white/20 backdrop-blur-md hover:bg-white text-white hover:text-[#1E3A5F] rounded-full transition-all shadow-sm">
           <Heart size={14} fill="currentColor" className="opacity-80" />
         </button>
         <div className="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/60 to-transparent">

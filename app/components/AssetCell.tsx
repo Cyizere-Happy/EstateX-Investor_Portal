@@ -43,7 +43,7 @@ const AssetCell = ({ asset }: { asset: Asset }) => {
       </div>
 
       <div className="flex flex-col items-end min-w-[80px]">
-        <div className="flex items-center gap-1 text-green-600 mb-0.5">
+        <div className="flex items-center gap-1 text-[#1E3A5F] mb-0.5">
           <ArrowUpRight size={14} />
           <span className="text-[13px] font-black">{asset.growth}</span>
         </div>
