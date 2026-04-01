@@ -9,7 +9,9 @@ import {
   Layout,
   PieChart,
   Wallet,
-  FileText
+  FileText,
+  Globe,
+  Hexagon
 } from "lucide-react";
 
 interface SidebarProps {
@@ -40,6 +42,8 @@ const Sidebar = ({ activeView, onNavigate }: SidebarProps) => {
             { icon: <Layout size={16} />, label: "Dashboard", id: "dashboard" },
             { icon: <Building size={16} />, label: "Marketplace", id: "marketplace" },
             { icon: <PieChart size={16} />, label: "My Portfolio", id: "portfolio" },
+            { icon: <Hexagon size={16} />, label: "NFT Market", id: "nft-market" },
+            { icon: <Globe size={16} />, label: "Diaspora Hub", id: "diaspora" },
             { icon: <Wallet size={16} />, label: "Transactions", id: "transactions" },
             { icon: <FileText size={16} />, label: "Legal Documents", id: "documents" },
             { icon: <Users size={16} />, label: "Governance", id: "governance" },
