@@ -81,8 +81,8 @@ const QuickAccess = () => {
               </div>
             </div>
 
-            <div className={`absolute -right-2 -bottom-2 opacity-10 ${item.textColor}`}>
-               {React.cloneElement(item.icon as React.ReactElement, { size: 100 })}
+            <div className={`absolute -right-2 -bottom-2 opacity-10 ${item.textColor} [&>svg]:w-[100px] [&>svg]:h-[100px]`}>
+               {item.icon}
             </div>
           </div>
         ))}
