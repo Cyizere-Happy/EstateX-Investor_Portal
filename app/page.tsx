@@ -10,6 +10,8 @@ import Portfolio from "./components/Portfolio";
 import Governance from "./components/Governance";
 import Transactions from "./components/Transactions";
 import LegalDocuments from "./components/LegalDocuments";
+import DiasporaHub from "./components/DiasporaHub";
+import NftSecondaryMarket from "./components/NftSecondaryMarket";
 
 export default function Home() {
   const [currentView, setCurrentView] = useState("dashboard");
@@ -26,6 +28,10 @@ export default function Home() {
         return <Transactions />;
       case "documents":
         return <LegalDocuments />;
+      case "diaspora":
+        return <DiasporaHub />;
+      case "nft-market":
+        return <NftSecondaryMarket />;
       case "dashboard":
       default:
         return (
