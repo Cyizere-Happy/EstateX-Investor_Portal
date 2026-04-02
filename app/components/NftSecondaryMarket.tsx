@@ -1,168 +1,191 @@
 "use client";
 
-import React, { useState } from "react";
-import {
-  Hexagon,
-  TrendingUp,
-  TrendingDown,
-  ArrowUpRight,
-  Search,
-  SlidersHorizontal,
-  BarChart3,
-  Clock,
-  DollarSign,
-} from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { Hexagon, Search, BarChart3, Clock, DollarSign, Inbox, Loader2, ListPlus, ArrowRight } from "lucide-react";
+import { api } from "../../lib/api";
+import Modal from "./ui/Modal";
 
-const listedNfts = [
-  { id: "1", project: "Kigali Heights Plaza", tokenId: "#KHP-0042", shares: 5, listPrice: "$2,250", change: "+8.4%", volume24h: "$12,400", floor: "$420", holders: 124, type: "RETAIL", image: "/retail.png" },
-  { id: "2", project: "Vision City II", tokenId: "#VC2-0018", shares: 2, listPrice: "$4,200", change: "+3.1%", volume24h: "$8,900", floor: "$2,050", holders: 342, type: "RESIDENTIAL", image: "/villa.png" },
-  { id: "3", project: "Nyagatare Trade Center", tokenId: "#NTC-0091", shares: 10, listPrice: "$1,500", change: "-2.3%", volume24h: "$3,200", floor: "$145", holders: 89, type: "COMMERCIAL", image: "/office.png" },
-  { id: "4", project: "Rubavu Waterfront", tokenId: "#RWF-0007", shares: 3, listPrice: "$2,550", change: "+12.1%", volume24h: "$18,600", floor: "$830", holders: 215, type: "RESORT", image: "/resort.png" },
-  { id: "5", project: "Gahanga Housing", tokenId: "#GHE-0155", shares: 8, listPrice: "$4,400", change: "+1.8%", volume24h: "$5,700", floor: "$540", holders: 156, type: "RESIDENTIAL", image: "/villa.png" },
-  { id: "6", project: "Downtown Office Hub", tokenId: "#DOH-0033", shares: 1, listPrice: "$1,200", change: "-0.5%", volume24h: "$2,100", floor: "$1,180", holders: 198, type: "OFFICE", image: "/office.png" },
-];
-
-const recentTrades = [
-  { token: "#KHP-0039", price: "$450", time: "2 min ago", type: "buy" },
-  { token: "#VC2-0012", price: "$2,100", time: "5 min ago", type: "sell" },
-  { token: "#RWF-0003", price: "$850", time: "12 min ago", type: "buy" },
-  { token: "#GHE-0148", price: "$550", time: "18 min ago", type: "buy" },
-  { token: "#DOH-0028", price: "$1,190", time: "25 min ago", type: "sell" },
-];
+interface Listing {
+  id: string;
+  project_id: string;
+  amount: number;
+  price_per_share: string;
+  seller: { id: string; first_name: string; last_name: string };
+  project: { id: string; title: string; slug: string; expected_roi: number };
+}
 
 const NftSecondaryMarket = () => {
   const [tab, setTab] = useState<"listings" | "trades">("listings");
+  const [listings, setListings] = useState<Listing[]>([]);
+  const [loading, setLoading] = useState(true);
+  
+  const [showListModal, setShowListModal] = useState(false);
+  const [listData, setListData] = useState({ projectId: "", amount: "", price: "" });
+  const [submitting, setSubmitting] = useState(false);
+
+  const fetchListings = async () => {
+    try {
+      const res = await api("/nfts/listings");
+      setListings(res.data || []);
+    } catch (err) {
+      console.error("Failed to load listings", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchListings();
+  }, []);
+
+  const handleListShares = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSubmitting(true);
+    try {
+      await api(`/nfts/${listData.projectId}/list`, {
+        method: "POST",
+        body: JSON.stringify({
+          amount: parseInt(listData.amount, 10),
+          price_per_share: parseFloat(listData.price)
+        })
+      });
+      setShowListModal(false);
+      setListData({ projectId: "", amount: "", price: "" });
+      fetchListings();
+    } catch (err: any) {
+      alert(err.message || "Failed to list shares");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleBuy = async (listingId: string, amountToBuy: number) => {
+    if (!window.confirm(`Buy ${amountToBuy} shares?`)) return;
+    try {
+      await api(`/nfts/listings/${listingId}/buy`, {
+        method: "POST",
+        body: JSON.stringify({ amount: amountToBuy })
+      });
+      fetchListings();
+    } catch (err: any) {
+      alert(err.message || "Failed to buy shares");
+    }
+  };
+
+  const activeCount = listings.length;
+  const floorPrice = activeCount > 0 ? Math.min(...listings.map(l => parseFloat(l.price_per_share))) : 0;
 
   return (
-    <div className="flex-1 flex flex-col h-full overflow-hidden bg-white">
-      {/* Top bar */}
-      <div className="bg-white border-b border-gray-100 px-8 py-4 flex items-center justify-between sticky top-0 z-30">
+    <div className="flex-1 flex flex-col h-full overflow-hidden bg-slate-50">
+      <div className="bg-white border-b border-slate-200 px-8 py-4 flex items-center justify-between sticky top-0 z-30 shadow-sm">
         <div>
-          <h2 className="text-[18px] font-black text-gray-900 tracking-tight flex items-center gap-2">
-            <Hexagon size={18} className="text-[#1E3A5F]" /> NFT secondary market
+          <h2 className="text-xl font-black text-slate-900 tracking-tight flex items-center gap-2">
+            <Hexagon size={20} className="text-[#1E3A5F]" /> NFT Secondary Market
           </h2>
-          <p className="text-[11px] text-gray-500 font-medium mt-0.5">Trade fractional property ownership tokens</p>
+          <p className="text-[12px] text-slate-500 font-medium mt-1">Trade fractional property ownership tokens peer-to-peer</p>
         </div>
-        <div className="flex items-center gap-3">
-          <div className="relative">
-            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-            <input
-              type="text"
-              placeholder="Search by project or token..."
-              className="bg-gray-50 border border-gray-100 focus:border-[#1E3A5F] rounded-xl py-2 pl-9 pr-4 outline-none text-[12px] font-medium w-56"
-            />
-          </div>
-          <button className="p-2 bg-gray-50 hover:bg-[#1E3A5F] hover:text-white rounded-xl transition-all text-gray-600 border border-gray-100">
-            <SlidersHorizontal size={16} />
+        <div className="flex items-center gap-4">
+          <button onClick={() => setShowListModal(true)}
+            className="flex items-center gap-2 px-4 py-2 bg-[#1E3A5F] text-white text-xs font-bold rounded-xl hover:bg-slate-800 transition-colors">
+            <ListPlus size={16} /> List Shares
           </button>
         </div>
       </div>
 
-      {/* Stats row */}
-      <div className="px-8 py-4 border-b border-gray-50 grid grid-cols-4 gap-4">
+      <div className="px-8 py-5 border-b border-slate-200 bg-white grid grid-cols-2 md:grid-cols-4 gap-4">
         {[
-          { label: "24h Volume", value: "$50,900", icon: <BarChart3 size={14} />, change: "+14.2%" },
-          { label: "Floor (avg)", value: "$694", icon: <DollarSign size={14} />, change: "+2.8%" },
-          { label: "Active Listings", value: "156", icon: <Hexagon size={14} />, change: "+6" },
-          { label: "Last Trade", value: "2 min ago", icon: <Clock size={14} />, change: "" },
+          { label: "24h Volume", value: "$0", icon: <BarChart3 size={16} /> },
+          { label: "Floor Price", value: `$${floorPrice.toFixed(2)}`, icon: <DollarSign size={16} /> },
+          { label: "Active Listings", value: activeCount.toString(), icon: <Hexagon size={16} /> },
+          { label: "Last Trade", value: "—", icon: <Clock size={16} /> },
         ].map((s) => (
           <div key={s.label} className="flex items-center gap-3">
-            <div className="p-2 bg-gray-50 rounded-xl text-[#1E3A5F]">{s.icon}</div>
+            <div className="p-2.5 bg-slate-50 rounded-xl text-[#1E3A5F] border border-slate-100">{s.icon}</div>
             <div>
-              <p className="text-[14px] font-black text-gray-900">{s.value}</p>
-              <div className="flex items-center gap-1.5">
-                <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">{s.label}</p>
-                {s.change && (
-                  <span className={`text-[9px] font-bold ${s.change.startsWith("+") ? "text-emerald-600" : "text-red-500"}`}>{s.change}</span>
-                )}
-              </div>
+              <p className="text-[15px] font-black text-slate-900">{s.value}</p>
+              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{s.label}</p>
             </div>
           </div>
         ))}
       </div>
 
-      {/* Tabs */}
-      <div className="px-8 py-3 border-b border-gray-50 flex gap-1">
+      <div className="px-8 py-3 bg-white border-b border-slate-200 flex gap-2">
         {(["listings", "trades"] as const).map((t) => (
-          <button
-            key={t}
-            onClick={() => setTab(t)}
-            className={`px-4 py-2 rounded-xl text-[11px] font-bold transition-all ${
-              tab === t ? "bg-[#1E3A5F] text-white shadow-md" : "text-gray-500 hover:bg-gray-50"
-            }`}
-          >
+          <button key={t} onClick={() => setTab(t)}
+            className={`px-4 py-2 rounded-xl text-[11px] font-bold transition-all ${tab === t ? "bg-[#1E3A5F] text-white shadow-md" : "text-slate-500 hover:bg-slate-50 border border-slate-100"}`}>
             {t === "listings" ? "Active Listings" : "Recent Trades"}
           </button>
         ))}
       </div>
 
-      {/* Content */}
-      <div className="flex-1 overflow-y-auto custom-scrollbar p-8">
-        {tab === "listings" ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-            {listedNfts.map((nft) => {
-              const isPositive = nft.change.startsWith("+");
-              return (
-                <div key={nft.id} className="bg-white rounded-[24px] border border-gray-100 shadow-sm hover:shadow-lg transition-all overflow-hidden group">
-                  <div className="relative h-32 overflow-hidden bg-gray-100">
-                    <img src={nft.image} alt="" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                    <div className="absolute top-2.5 left-2.5">
-                      <span className="inline-flex items-center gap-1 bg-white/95 backdrop-blur-sm px-2.5 py-1 rounded-full text-[8px] font-black text-[#1E3A5F] uppercase tracking-wider shadow-sm">
-                        <Hexagon size={8} /> {nft.tokenId}
-                      </span>
-                    </div>
-                    <div className="absolute top-2.5 right-2.5">
-                      <span className="bg-black/70 text-white px-2 py-0.5 rounded-md text-[8px] font-bold uppercase">{nft.type}</span>
-                    </div>
-                  </div>
-                  <div className="p-4">
-                    <h3 className="text-[14px] font-black text-gray-900 group-hover:text-[#1E3A5F] transition-colors">{nft.project}</h3>
-                    <p className="text-[11px] text-gray-500 mt-1">{nft.shares} shares available</p>
-
-                    <div className="flex items-end justify-between mt-3 pt-3 border-t border-gray-50">
-                      <div>
-                        <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">List price</p>
-                        <p className="text-[18px] font-black text-gray-900">{nft.listPrice}</p>
-                      </div>
-                      <div className="text-right">
-                        <div className={`inline-flex items-center gap-1 text-[11px] font-bold ${isPositive ? "text-emerald-600" : "text-red-500"}`}>
-                          {isPositive ? <TrendingUp size={12} /> : <TrendingDown size={12} />}
-                          {nft.change}
-                        </div>
-                        <p className="text-[9px] text-gray-400 mt-0.5">Vol: {nft.volume24h}</p>
-                      </div>
-                    </div>
-
-                    <button className="w-full mt-3 py-2.5 bg-[#1E3A5F] text-white rounded-xl text-[11px] font-bold hover:bg-[#2a5080] transition-colors flex items-center justify-center gap-1.5">
-                      Trade <ArrowUpRight size={12} />
-                    </button>
-                  </div>
-                </div>
-              );
-            })}
+      <div className="flex-1 overflow-y-auto p-8 custom-scrollbar relative">
+        {loading ? (
+          <div className="absolute inset-0 flex flex-col items-center justify-center"><Loader2 className="animate-spin text-[#1E3A5F]" size={36} /></div>
+        ) : listings.length === 0 ? (
+          <div className="absolute inset-0 flex flex-col items-center justify-center text-slate-400">
+            <Inbox size={56} strokeWidth={1} />
+            <p className="mt-4 font-bold text-lg text-slate-600">No NFTs listed for sale</p>
+            <p className="text-sm mt-1 text-slate-500">Property ownership tokens listed by investors will appear here.</p>
           </div>
         ) : (
-          <div className="max-w-2xl">
-            <div className="bg-white rounded-[24px] border border-gray-100 shadow-sm overflow-hidden">
-              <div className="grid grid-cols-[1.5fr_1fr_1fr_0.5fr] px-5 py-3 bg-gray-50 border-b border-gray-100">
-                {["Token", "Price", "Time", "Type"].map((h) => (
-                  <span key={h} className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{h}</span>
-                ))}
-              </div>
-              {recentTrades.map((t, i) => (
-                <div key={i} className="grid grid-cols-[1.5fr_1fr_1fr_0.5fr] px-5 py-3.5 border-b border-gray-50 last:border-b-0 hover:bg-gray-50/40 items-center">
-                  <span className="text-[12px] font-bold text-gray-900 font-mono">{t.token}</span>
-                  <span className="text-[12px] font-bold text-gray-900">{t.price}</span>
-                  <span className="text-[11px] text-gray-500">{t.time}</span>
-                  <span className={`text-[9px] font-black uppercase tracking-wider px-2 py-1 rounded-lg w-fit ${
-                    t.type === "buy" ? "bg-emerald-50 text-emerald-800" : "bg-red-50 text-red-800"
-                  }`}>{t.type}</span>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {listings.map(l => (
+              <div key={l.id} className="bg-white border border-slate-200 rounded-3xl p-6 shadow-sm hover:shadow-md transition-shadow flex flex-col">
+                <div className="flex justify-between items-start mb-4">
+                  <div className="p-2 bg-blue-50 text-blue-700 rounded-xl"><Hexagon size={20} /></div>
+                  <span className="text-[10px] font-black bg-emerald-100 text-emerald-800 px-2 py-1 rounded-md uppercase">For Sale</span>
                 </div>
-              ))}
-            </div>
+                <h3 className="text-sm font-black text-slate-900 line-clamp-1">{l.project?.title || 'Property Token'}</h3>
+                <p className="text-xs font-bold text-slate-500 mt-1 mb-4">Seller: {l.seller?.first_name} {l.seller?.last_name?.[0]}.</p>
+                
+                <div className="bg-slate-50 rounded-2xl p-4 mb-6 border border-slate-100">
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="text-xs font-bold text-slate-500">Shares Available</span>
+                    <span className="text-sm font-black text-slate-900">{l.amount}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-xs font-bold text-slate-500">Price per Share</span>
+                    <span className="text-sm font-black text-[#1E3A5F]">${parseFloat(l.price_per_share).toFixed(2)}</span>
+                  </div>
+                </div>
+
+                <div className="mt-auto flex items-center justify-between border-t border-slate-100 pt-4">
+                  <span className="text-[10.5px] font-black text-slate-400 uppercase tracking-widest">Total: ${(l.amount * parseFloat(l.price_per_share)).toFixed(2)}</span>
+                  <button onClick={() => handleBuy(l.id, l.amount)}
+                    className="flex items-center justify-center w-10 h-10 bg-[#1E3A5F] text-white rounded-xl hover:bg-slate-800 transition-colors">
+                    <ArrowRight size={18} />
+                  </button>
+                </div>
+              </div>
+            ))}
           </div>
         )}
       </div>
+
+      <Modal isOpen={showListModal} onClose={() => setShowListModal(false)} title="List Shares for Sale">
+        <form onSubmit={handleListShares} className="space-y-4">
+          <div>
+            <label className="block text-xs font-bold text-slate-700 mb-1">Project ID</label>
+            <input type="text" required value={listData.projectId} onChange={(e) => setListData({ ...listData, projectId: e.target.value })}
+              className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 text-sm outline-none focus:border-[#1E3A5F]" placeholder="UUID of project you hold shares in" />
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs font-bold text-slate-700 mb-1">Amount of Shares</label>
+              <input type="number" required min="1" value={listData.amount} onChange={(e) => setListData({ ...listData, amount: e.target.value })}
+                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 text-sm outline-none focus:border-[#1E3A5F]" />
+            </div>
+            <div>
+              <label className="block text-xs font-bold text-slate-700 mb-1">Price per Share ($)</label>
+              <input type="number" step="0.01" required min="0.01" value={listData.price} onChange={(e) => setListData({ ...listData, price: e.target.value })}
+                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 text-sm outline-none focus:border-[#1E3A5F]" />
+            </div>
+          </div>
+          <button type="submit" disabled={submitting} className="w-full mt-4 py-3 bg-[#1E3A5F] text-white text-sm font-bold rounded-xl hover:bg-slate-800 disabled:opacity-50">
+            {submitting ? 'Listing...' : 'List Shares'}
+          </button>
+        </form>
+      </Modal>
     </div>
   );
 };
