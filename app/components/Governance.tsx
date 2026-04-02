@@ -1,235 +1,216 @@
 "use client";
 
-import React from "react";
-import { 
-  Building, 
-  ChevronDown, 
-  Plus, 
-  Circle,
-  Vote,
-  History,
-  Info,
-  ArrowUpRight,
-  Gavel,
-  TrendingUp
-} from "lucide-react";
-import ProposalItem from "./ProposalItem";
+import React, { useState, useEffect } from "react";
+import { Plus, Vote, History, Info, Gavel, TrendingUp, Inbox, Loader2 } from "lucide-react";
+import { api } from "../../lib/api";
+import Modal from "./ui/Modal";
+
+interface Proposal {
+  id: string;
+  title: string;
+  description: string;
+  status: string;
+  end_date: string;
+  project: { id: string; title: string };
+  votes: { support: boolean; weight: number }[];
+}
 
 const Governance = () => {
+  const [proposals, setProposals] = useState<Proposal[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [showModal, setShowModal] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [formData, setFormData] = useState({ project_id: "", title: "", description: "" });
+  const [voting, setVoting] = useState<string | null>(null); // proposal id being voted on
+
+  const fetchProposals = async () => {
+    try {
+      const res = await api("/governance/proposals");
+      setProposals(res.data || []);
+    } catch (err) {
+      console.error("Failed to load proposals", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchProposals();
+  }, []);
+
+  const handleCreate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSubmitting(true);
+    try {
+      await api("/governance/proposals", {
+        method: "POST",
+        body: JSON.stringify(formData)
+      });
+      setShowModal(false);
+      setFormData({ project_id: "", title: "", description: "" });
+      fetchProposals();
+    } catch (err: any) {
+      alert(err.message || "Failed to create proposal");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleVote = async (proposalId: string, support: boolean) => {
+    setVoting(proposalId);
+    try {
+      await api(`/governance/proposals/${proposalId}/vote`, {
+        method: "POST",
+        body: JSON.stringify({ support })
+      });
+      fetchProposals();
+    } catch (err: any) {
+      alert(err.message || "Failed to submit vote");
+    } finally {
+      setVoting(null);
+    }
+  };
+
+  // Calculate generic stats
+  const totalVotes = proposals.reduce((acc, p) => acc + p.votes.length, 0);
+  const activeCount = proposals.filter((p) => p.status === "active").length;
+
   return (
-    <div className="flex-1 flex flex-col h-full bg-white overflow-hidden p-8 custom-scrollbar overflow-y-auto">
-      {/* Top Section: Results & Calendar */}
+    <div className="flex-1 flex flex-col h-full bg-[#EEF2F9] overflow-hidden p-8 custom-scrollbar overflow-y-auto">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-        
-        {/* Voting Power Blob Chart (Reference inspired) */}
-        <div className="lg:col-span-2 bg-white border border-slate-200 rounded-[48px] p-8 relative overflow-hidden h-[340px] group shadow-sm">
+        <div className="lg:col-span-2 bg-white rounded-3xl p-8 relative overflow-hidden h-[300px] shadow-sm">
           <div className="relative z-10 h-full flex flex-col justify-between">
             <div>
-              <h3 className="text-[16px] font-black text-gray-900 mb-1">Your Voting</h3>
-              <p className="text-[16px] font-black text-gray-900">Results for Today</p>
+              <h3 className="text-xl font-black text-slate-900 mb-1">Your Voting Power</h3>
+              <p className="text-sm font-medium text-slate-500">Based on your fractional property holdings</p>
             </div>
-
             <div className="flex gap-6 mt-auto">
-              {[
-                { label: "Voting activity", color: "bg-[#1E3A5F]" },
-                { label: "Proposals engagement", color: "bg-[#1E3A5F]/40" },
-                { label: "Delegation time", color: "bg-slate-300" },
-              ].map(item => (
-                <div key={item.label} className="flex items-center gap-2">
-                  <div className={`w-3.5 h-1 ${item.color} rounded-full`} />
-                  <span className="text-[11px] font-bold text-gray-600 tracking-tight">{item.label}</span>
-                </div>
-              ))}
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 bg-[#1E3A5F] rounded-full" />
+                <span className="text-xs font-bold text-slate-600">Active Proposals: {activeCount}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 bg-emerald-500 rounded-full" />
+                <span className="text-xs font-bold text-slate-600">Total Votes Cast: {totalVotes}</span>
+              </div>
             </div>
           </div>
-
-          {/* Blobs Layout */}
-          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-             <div className="relative w-full h-full">
-                {/* Yellow Big Blob */}
-                <div className="absolute top-[10%] right-[15%] w-56 h-56 bg-[#1E3A5F]/25 rounded-full blur-[60px] opacity-80 animate-pulse" />
-                <div className="absolute top-[25%] right-[25%] bg-white/10 backdrop-blur-md rounded-full p-6 text-center shadow-2xl border border-white/20 transform hover:scale-110 transition-transform pointer-events-auto cursor-help">
-                   <p className="text-[18px] font-black text-gray-900">1.875</p>
-                   <p className="text-[9px] font-bold text-gray-500 uppercase">Weight</p>
-                </div>
-
-                {/* Red Small Blob */}
-                <div className="absolute bottom-[20%] left-[35%] w-32 h-32 bg-[#1E3A5F]/20 rounded-full blur-[40px] opacity-90" />
-                <div className="absolute bottom-[30%] left-[40%] bg-white/10 backdrop-blur-md rounded-full w-16 h-16 flex flex-col items-center justify-center shadow-xl border border-white/20 pointer-events-auto cursor-help">
-                   <p className="text-[12px] font-black text-gray-900">850</p>
-                   <p className="text-[7px] font-bold text-gray-500 uppercase">Power</p>
-                </div>
-
-                {/* Dark Circle */}
-                <div className="absolute top-[20%] left-[30%] bg-[#1E3A5F] rounded-full w-20 h-20 flex flex-col items-center justify-center text-white shadow-2xl pointer-events-auto cursor-help transform -translate-x-10 translate-y-5">
-                   <p className="text-[13px] font-black">2.30</p>
-                   <p className="text-[7px] font-bold opacity-60 uppercase">Hours</p>
-                </div>
-             </div>
+          <div className="absolute top-[20%] right-[10%] bg-slate-50 rounded-full w-48 h-48 flex flex-col items-center justify-center text-[#1E3A5F] border-8 border-slate-100 shadow-inner">
+            <Gavel size={40} className="mb-2 opacity-50" />
+            <p className="text-3xl font-black">DAO</p>
           </div>
+        </div>
 
-          <button className="absolute top-8 right-8 w-10 h-10 bg-[#1E3A5F] text-white rounded-xl flex items-center justify-center shadow-xl hover:scale-110 transition-all z-20">
-             <Info size={18} />
+        <div className="bg-[#1E3A5F] rounded-3xl p-8 text-white relative overflow-hidden flex flex-col h-[300px] shadow-xl">
+          <h3 className="text-md font-black tracking-tight mb-6">Upcoming Deadlines</h3>
+          <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar">
+            {proposals.filter(p => p.status === "active").length === 0 ? (
+              <div className="h-full flex flex-col items-center justify-center text-white/50">
+                <Vote size={32} strokeWidth={1} />
+                <p className="mt-3 text-sm font-semibold">No active deadlines</p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {proposals.filter(p => p.status === "active").map(p => (
+                  <div key={p.id} className="bg-white/10 rounded-xl p-4">
+                    <p className="text-xs font-bold truncate">{p.title}</p>
+                    <p className="text-[10px] text-white/60 mt-1">Ends: {new Date(p.end_date).toLocaleDateString()}</p>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-white rounded-3xl p-8 shadow-sm flex-1 flex flex-col min-h-0">
+        <div className="flex items-center justify-between mb-8">
+          <h3 className="text-xl font-black text-slate-900 tracking-tight">Governance Proposals</h3>
+          <button onClick={() => setShowModal(true)}
+            className="flex items-center gap-2 px-4 py-2 bg-[#1E3A5F] text-white text-xs font-bold rounded-xl hover:bg-slate-800 transition-colors">
+            <Plus size={16} /> New Proposal
           </button>
         </div>
 
-        {/* Training Days Calendar (Reference inspired) */}
-        <div className="bg-[#1E3A5F] rounded-[48px] p-8 text-white relative overflow-hidden flex flex-col h-[340px] shadow-xl">
-           <div className="flex items-center justify-between mb-8 z-10">
-              <h3 className="text-[15px] font-black tracking-tight">Governance Calendar</h3>
-              <div className="flex items-center gap-1 text-[11px] font-bold opacity-40 cursor-pointer hover:opacity-100 transition-all">
-                June <ChevronDown size={14} />
-              </div>
-           </div>
+        {loading ? (
+          <div className="flex-1 flex items-center justify-center"><Loader2 className="animate-spin text-[#1E3A5F]" size={32} /></div>
+        ) : proposals.length === 0 ? (
+          <div className="flex-1 flex flex-col items-center justify-center text-slate-400 py-12">
+            <Inbox size={48} strokeWidth={1} />
+            <p className="mt-4 font-semibold text-[15px]">No proposals yet</p>
+            <p className="text-[12px] mt-1">Create a governance proposal or wait for one to be submitted by the community.</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 overflow-y-auto pr-2 custom-scrollbar pb-6">
+            {proposals.map(p => {
+              const yesVotes = p.votes.filter(v => v.support).reduce((acc, v) => acc + v.weight, 0);
+              const noVotes = p.votes.filter(v => !v.support).reduce((acc, v) => acc + v.weight, 0);
+              const total = yesVotes + noVotes;
+              const yesPct = total > 0 ? Math.round((yesVotes / total) * 100) : 0;
 
-           <div className="grid grid-cols-7 gap-y-6 text-center text-[10px] font-black opacity-30 mb-4 z-10 uppercase tracking-[0.2em]">
-              {['m', 't', 'w', 't', 'f', 's', 's'].map((d, i) => <div key={i}>{d}</div>)}
-           </div>
-
-           <div className="grid grid-cols-7 gap-y-4 text-[13px] font-bold z-10 relative">
-              {Array.from({ length: 30 }).map((_, i) => {
-                const day = i + 1;
-                const isSelected = day === 1 || day === 5;
-                const isPast = day < 12 && !isSelected;
-                const isToday = day === 12;
-                
-                return (
-                  <div key={i} className="flex justify-center items-center h-8">
-                     <div className={`w-7 h-7 flex items-center justify-center rounded-full transition-all cursor-pointer ${
-                       isSelected ? 'bg-white text-[#1E3A5F] shadow-md' : 
-                       isPast ? 'text-white opacity-40' : 
-                       isToday ? 'border border-white/40' : 
-                       'opacity-80 hover:bg-white/10'
-                     }`}>
-                       {day}
-                     </div>
+              return (
+                <div key={p.id} className="border border-slate-200 rounded-2xl p-6 flex flex-col">
+                  <div className="flex items-start justify-between mb-3">
+                    <span className={`text-[10px] font-black uppercase tracking-widest px-2 py-1 rounded-md ${p.status === 'active' ? 'bg-amber-100 text-amber-800' : p.status === 'passed' ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-800'}`}>
+                      {p.status}
+                    </span>
+                    <span className="text-[10px] font-bold text-slate-400">{new Date(p.end_date).toLocaleDateString()}</span>
                   </div>
-                );
-              })}
-           </div>
-
-           <div className="mt-auto flex items-center gap-4 text-[9px] font-bold opacity-40 z-10 uppercase tracking-widest">
-              <div className="flex items-center gap-1.5"><Circle size={8} /> Current</div>
-              <div className="flex items-center gap-1.5"><Circle size={8} className="fill-white text-white" /> Voted</div>
-              <div className="flex items-center gap-1.5"><Circle size={8} strokeWidth={3} /> Scheduled</div>
-           </div>
-        </div>
-      </div>
-
-      {/* Bottom Section: Proposals & Stats */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        
-        <div className="flex flex-col gap-6">
-           {/* Steps Gauge (Reference inspired) */}
-           <div className="bg-white rounded-[40px] p-8 border border-gray-50 shadow-sm relative overflow-hidden group">
-              <div className="flex justify-between items-start mb-1">
-                 <div>
-                   <h3 className="text-[17px] font-black text-gray-900 mb-0.5 tracking-tight">Active Quorum</h3>
-                   <p className="text-[11px] font-bold text-gray-400">Vote on Kigali Heights Proposal</p>
-                 </div>
-              </div>
-
-              <div className="relative w-36 h-36 mx-auto mt-4">
-                 <svg className="w-full h-full transform -rotate-90">
-                    <circle cx="72" cy="72" r="64" fill="transparent" stroke="#F5F5F5" strokeWidth="12" />
-                    <circle 
-                      cx="72" 
-                      cy="72" 
-                      r="64" 
-                      fill="transparent" 
-                      stroke="url(#gradient-navy)" 
-                      strokeWidth="12" 
-                      strokeDasharray="402" 
-                      strokeDashoffset="140" 
-                      strokeLinecap="round"
-                    />
-                    <defs>
-                       <linearGradient id="gradient-navy" x1="0%" y1="0%" x2="100%" y2="0%">
-                          <stop offset="0%" stopColor="#2a5080" />
-                          <stop offset="100%" stopColor="#1E3A5F" />
-                       </linearGradient>
-                    </defs>
-                 </svg>
-                 <div className="absolute inset-0 flex flex-col items-center justify-center pb-2">
-                    <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest">reached</p>
-                    <p className="text-[22px] font-black text-gray-900">68%</p>
-                 </div>
-                 <div className="absolute top-[10%] right-[10%] bg-white shadow-xl rounded-full w-8 h-8 flex items-center justify-center text-[9px] font-black border border-gray-50">
-                    5.2k
-                 </div>
-              </div>
-
-              <button className="w-full mt-6 flex items-center justify-center gap-2 text-[12px] font-black text-gray-900 hover:text-[#1E3A5F] transition-colors">
-                View Voting Statistics <Plus size={16} className="bg-[#1E3A5F] text-white rounded-full p-1" />
-              </button>
-           </div>
-
-           {/* Weight Loss Progress (Reference inspired) */}
-           <div className="bg-white rounded-[40px] p-8 border border-gray-50 shadow-sm">
-              <div className="flex justify-between items-end mb-6">
-                 <div>
-                   <h3 className="text-[17px] font-black text-gray-900 tracking-tight">Milestone Funding</h3>
-                 </div>
-                 <p className="text-[14px] font-black text-[#1E3A5F]">68% <span className="text-[10px] text-gray-400 uppercase">Released</span></p>
-              </div>
-              <div className="relative h-10 flex items-center px-2">
-                 <div className="w-full h-4 bg-gray-50 rounded-full overflow-hidden border border-gray-100 flex items-center px-1">
-                    <div className="h-2.5 bg-[#1E3A5F] rounded-full transition-all duration-1000 shadow-[0_0_10px_rgba(30,58,95,0.35)]" style={{ width: '68%' }} />
-                 </div>
-                 <div className="absolute left-[68%] -translate-x-1/2 -top-1">
-                    <div className="bg-[#1E3A5F] text-white px-2 py-0.5 rounded-full text-[9px] font-black shadow-lg">
-                       $53.2k
+                  <h4 className="text-sm font-black text-slate-900 mb-1">{p.title}</h4>
+                  <p className="text-xs font-bold text-[#1E3A5F] mb-3">{p.project?.title || 'Unknown Project'}</p>
+                  <p className="text-xs text-slate-600 line-clamp-3 mb-6 flex-1">{p.description}</p>
+                  
+                  <div className="space-y-3 mb-6">
+                    <div className="flex justify-between text-[10px] font-bold">
+                      <span className="text-emerald-700">Yes ({yesPct}%)</span>
+                      <span className="text-red-700">No ({100 - yesPct}%)</span>
                     </div>
-                 </div>
-              </div>
-              <div className="flex justify-between mt-3 px-1 text-[10px] font-black text-gray-400 uppercase tracking-widest">
-                 <span>$0</span>
-                 <span>Target: $100k</span>
-              </div>
-           </div>
-        </div>
+                    <div className="h-2 bg-red-100 rounded-full overflow-hidden flex">
+                      <div className="h-full bg-emerald-500" style={{ width: `${yesPct}%` }} />
+                    </div>
+                  </div>
 
-        {/* Proposals List (Reference inspired) */}
-        <div className="lg:col-span-2 bg-white rounded-[48px] p-8 border border-gray-50 shadow-sm flex flex-col overflow-hidden">
-           <div className="flex items-center justify-between mb-8">
-              <h3 className="text-[20px] font-black text-gray-900 tracking-tight">Active Proposals</h3>
-              <button className="flex items-center gap-2 text-[12px] font-black text-gray-600 hover:text-[#1E3A5F] transition-colors">
-                New Proposal <Plus size={20} className="bg-[#1E3A5F] text-white rounded-xl p-1" />
-              </button>
-           </div>
-
-           <div className="space-y-4 overflow-y-auto custom-scrollbar pr-2 flex-1">
-              <ProposalItem 
-                title="Property Redesign" 
-                status="Author: Alice McCain" 
-                sessions={9} 
-                total={12} 
-                icon={<Building size={20} />} 
-              />
-              <ProposalItem 
-                title="Yield Optimization" 
-                status="Author: Jennifer Lubin" 
-                sessions={6} 
-                total={10} 
-                icon={<TrendingUp size={20} />} 
-              />
-              <ProposalItem 
-                title="Governance Update" 
-                status="Author: Johnson Cooper" 
-                sessions={4} 
-                total={8} 
-                icon={<Gavel size={20} />} 
-              />
-              <ProposalItem 
-                title="Community Grant" 
-                status="Author: DAO Core" 
-                sessions={8} 
-                total={10} 
-                icon={<History size={20} />} 
-              />
-           </div>
-        </div>
+                  {p.status === 'active' && (
+                    <div className="grid grid-cols-2 gap-3 mt-auto">
+                      <button onClick={() => handleVote(p.id, true)} disabled={voting === p.id}
+                        className="py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 text-xs font-bold rounded-xl transition-colors disabled:opacity-50">
+                        Vote Yes
+                      </button>
+                      <button onClick={() => handleVote(p.id, false)} disabled={voting === p.id}
+                        className="py-2 bg-red-50 hover:bg-red-100 text-red-800 text-xs font-bold rounded-xl transition-colors disabled:opacity-50">
+                        Vote No
+                      </button>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        )}
       </div>
+
+      <Modal isOpen={showModal} onClose={() => setShowModal(false)} title="Create Proposal">
+        <form onSubmit={handleCreate} className="space-y-4">
+          <div>
+            <label className="block text-xs font-bold text-slate-700 mb-1">Project ID</label>
+            <input type="text" required value={formData.project_id} onChange={(e) => setFormData({ ...formData, project_id: e.target.value })}
+              className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 text-sm outline-none focus:border-[#1E3A5F]" placeholder="UUID of project you hold shares in" />
+          </div>
+          <div>
+            <label className="block text-xs font-bold text-slate-700 mb-1">Proposal Title</label>
+            <input type="text" required value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+              className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 text-sm outline-none focus:border-[#1E3A5F]" />
+          </div>
+          <div>
+            <label className="block text-xs font-bold text-slate-700 mb-1">Description</label>
+            <textarea required value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} rows={4}
+              className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 text-sm outline-none focus:border-[#1E3A5F]" />
+          </div>
+          <button type="submit" disabled={submitting} className="w-full py-3 bg-[#1E3A5F] text-white text-sm font-bold rounded-xl hover:bg-slate-800 disabled:opacity-50">
+            {submitting ? 'Submitting...' : 'Submit Proposal'}
+          </button>
+        </form>
+      </Modal>
     </div>
   );
 };
