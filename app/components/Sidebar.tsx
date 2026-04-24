@@ -3,14 +3,14 @@
 import React from "react";
 import { 
   Building,
-  Users, 
   TrendingUp,
   Plus,
   Layout,
   PieChart,
   Wallet,
   FileText,
-  Globe
+  Globe,
+  MessageSquare
 } from "lucide-react";
 
 interface SidebarProps {
@@ -44,6 +44,7 @@ const Sidebar = ({ activeView, onNavigate }: SidebarProps) => {
             { icon: <Globe size={16} />, label: "Diaspora Hub", id: "diaspora" },
             { icon: <Wallet size={16} />, label: "Transactions", id: "transactions" },
             { icon: <FileText size={16} />, label: "Legal Documents", id: "documents" },
+            { icon: <MessageSquare size={16} />, label: "Appeals", id: "appeals" },
           ].map((item, i) => (
             <div
               key={i}
