@@ -10,6 +10,7 @@ import Portfolio from "./components/Portfolio";
 import Transactions from "./components/Transactions";
 import LegalDocuments from "./components/LegalDocuments";
 import DiasporaHub from "./components/DiasporaHub";
+import Appeals from "./components/Appeals";
 
 export default function Home() {
   const [currentView, setCurrentView] = useState("dashboard");
@@ -26,6 +27,8 @@ export default function Home() {
         return <LegalDocuments />;
       case "diaspora":
         return <DiasporaHub />;
+      case "appeals":
+        return <Appeals />;
       case "dashboard":
       default:
         return (
