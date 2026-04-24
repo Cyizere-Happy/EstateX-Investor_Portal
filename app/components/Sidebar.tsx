@@ -10,8 +10,7 @@ import {
   PieChart,
   Wallet,
   FileText,
-  Globe,
-  Hexagon
+  Globe
 } from "lucide-react";
 
 interface SidebarProps {
@@ -40,13 +39,11 @@ const Sidebar = ({ activeView, onNavigate }: SidebarProps) => {
         <nav className="flex-1 space-y-0.5 overflow-y-auto pr-1.5 custom-scrollbar -mr-1.5">
           {[
             { icon: <Layout size={16} />, label: "Dashboard", id: "dashboard" },
-            { icon: <Building size={16} />, label: "Marketplace", id: "marketplace" },
+            { icon: <Building size={16} />, label: "Units Market", id: "marketplace" },
             { icon: <PieChart size={16} />, label: "My Portfolio", id: "portfolio" },
-            { icon: <Hexagon size={16} />, label: "NFT Market", id: "nft-market" },
             { icon: <Globe size={16} />, label: "Diaspora Hub", id: "diaspora" },
             { icon: <Wallet size={16} />, label: "Transactions", id: "transactions" },
             { icon: <FileText size={16} />, label: "Legal Documents", id: "documents" },
-            { icon: <Users size={16} />, label: "Governance", id: "governance" },
           ].map((item, i) => (
             <div
               key={i}
