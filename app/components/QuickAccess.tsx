@@ -1,32 +1,17 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import { RotateCw, FileText, Building, PieChart, TrendingUp, Loader2 } from "lucide-react";
-import { api } from "../../lib/api";
+import React from "react";
+import { RotateCw, FileText, Building, PieChart, TrendingUp } from "lucide-react";
 
 const QuickAccess = () => {
-  const [stats, setStats] = useState({ projects: 0, investments: 0, earnings: 0 });
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    Promise.allSettled([
-      api("/public/projects?status=funding_open&limit=1").then((r) => r.meta?.total ?? r.data?.length ?? 0),
-      api("/investments/my").then((r) => r.data?.length ?? 0).catch(() => 0),
-    ]).then(([projRes, invRes]) => {
-      setStats({
-        projects: projRes.status === "fulfilled" ? (projRes.value as number) : 0,
-        investments: invRes.status === "fulfilled" ? (invRes.value as number) : 0,
-        earnings: 0,
-      });
-      setLoading(false);
-    });
-  }, []);
+  // DEMO MODE — hardcoded stats
+  const stats = { projects: 8, investments: 3, earnings: 1250 };
 
   const portfolioItems = [
     {
       name: "Available Projects",
       label: "MARKETPLACE",
-      count: loading ? "..." : `${stats.projects} Listed`,
+      count: `${stats.projects} Listed`,
       color: "bg-[#1E3A5F]",
       textColor: "text-white",
       icon: <Building size={18} />,
@@ -34,7 +19,7 @@ const QuickAccess = () => {
     {
       name: "My Investments",
       label: "MY ASSETS",
-      count: loading ? "..." : `${stats.investments} Active`,
+      count: `${stats.investments} Active`,
       color: "bg-white",
       textColor: "text-gray-900",
       icon: <PieChart size={18} />,
@@ -42,7 +27,7 @@ const QuickAccess = () => {
     {
       name: "Earnings",
       label: "DIVIDENDS",
-      count: loading ? "..." : stats.earnings > 0 ? `+$${stats.earnings.toLocaleString()}` : "No payouts yet",
+      count: `+$${stats.earnings.toLocaleString()}`,
       color: "bg-white",
       textColor: "text-gray-900",
       icon: <TrendingUp size={18} />,
