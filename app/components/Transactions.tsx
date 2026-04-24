@@ -1,8 +1,7 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import { Search, ArrowUpRight, Building, Loader2, Inbox, Circle, TrendingUp } from "lucide-react";
-import { api } from "../../lib/api";
+import React from "react";
+import { Building, Circle, TrendingUp } from "lucide-react";
 
 interface Transaction {
   id: string;
@@ -10,27 +9,25 @@ interface Transaction {
   status: string;
   method: string;
   created_at: string;
-  project?: { id: string; title: string; slug: string };
+  project: { title: string };
 }
 
+const DEMO_TRANSACTIONS: Transaction[] = [
+  { id: "tx1", amount: 15000, status: "completed", method: "stripe", created_at: "2026-02-15T10:00:00Z", project: { title: "Kigali Heights Residences" } },
+  { id: "tx2", amount: 8500, status: "completed", method: "momo", created_at: "2026-03-01T14:30:00Z", project: { title: "Nyarutarama Green Villas" } },
+  { id: "tx3", amount: 5000, status: "pending", method: "stripe", created_at: "2026-03-28T09:15:00Z", project: { title: "Musanze Lakeside Resort" } },
+  { id: "tx4", amount: 2000, status: "completed", method: "momo", created_at: "2026-03-20T16:45:00Z", project: { title: "Rubavu Waterfront Apartments" } },
+  { id: "tx5", amount: 12000, status: "completed", method: "stripe", created_at: "2026-01-10T08:30:00Z", project: { title: "Kigali Heights Residences" } },
+];
+
 const Transactions = () => {
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    api("/investments/my?limit=50")
-      .then((res) => setTransactions(res.data || []))
-      .catch(() => setTransactions([]))
-      .finally(() => setLoading(false));
-  }, []);
-
+  const transactions = DEMO_TRANSACTIONS;
   const completed = transactions.filter((t) => t.status === "completed");
   const pending = transactions.filter((t) => t.status === "pending");
   const totalVolume = completed.reduce((s, t) => s + Number(t.amount), 0);
 
   return (
     <div className="flex-1 flex flex-col h-full bg-white overflow-hidden pt-8 px-5 pb-5 custom-scrollbar overflow-y-auto transition-all duration-300">
-
       {/* Top Row: Summary Stats */}
       <div className="flex items-center justify-between mb-4 gap-2">
         <div className="flex gap-1.5 shrink-0">
@@ -48,7 +45,6 @@ const Transactions = () => {
             <p className="text-base font-black italic">{pending.length}</p>
           </div>
         </div>
-
         <div className="flex gap-4">
           <div className="text-center">
             <div className="flex items-center gap-1 mb-0.5">
@@ -63,65 +59,52 @@ const Transactions = () => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 flex-1 min-h-0">
-
-        {/* Center: Transaction Table */}
         <div className="lg:col-span-12 flex flex-col gap-5">
           <div className="bg-white rounded-[20px] p-4 shadow-sm border border-gray-100 flex-1 overflow-hidden flex flex-col">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-[12px] font-black text-gray-900 tracking-[0.1em] leading-none uppercase">Transaction History</h3>
             </div>
-
-            {loading ? (
-              <div className="flex-1 flex items-center justify-center py-12"><Loader2 className="animate-spin text-[#1E3A5F]" size={28} /></div>
-            ) : transactions.length === 0 ? (
-              <div className="flex-1 flex flex-col items-center justify-center py-12 text-neutral-400">
-                <Inbox size={48} strokeWidth={1} />
-                <p className="mt-4 font-semibold text-[15px]">No transactions yet</p>
-                <p className="text-[12px] mt-1">Your investment transactions will appear here once you invest in a project.</p>
-              </div>
-            ) : (
-              <div className="overflow-x-auto flex-1 custom-scrollbar">
-                <table className="w-full text-left">
-                  <thead className="border-b border-gray-50">
-                    <tr className="text-[10px] font-black text-gray-300 uppercase tracking-widest">
-                      <th className="px-4 py-4">Asset Name</th>
-                      <th className="px-4 py-4">Method</th>
-                      <th className="px-4 py-4">Amount</th>
-                      <th className="px-4 py-4 text-center">Status</th>
-                      <th className="px-4 py-4">Date</th>
+            <div className="overflow-x-auto flex-1 custom-scrollbar">
+              <table className="w-full text-left">
+                <thead className="border-b border-gray-50">
+                  <tr className="text-[10px] font-black text-gray-300 uppercase tracking-widest">
+                    <th className="px-4 py-4">Asset Name</th>
+                    <th className="px-4 py-4">Method</th>
+                    <th className="px-4 py-4">Amount</th>
+                    <th className="px-4 py-4 text-center">Status</th>
+                    <th className="px-4 py-4">Date</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-50/50">
+                  {transactions.map(tx => (
+                    <tr key={tx.id} className="group hover:bg-gray-50 transition-colors">
+                      <td className="px-4 py-4">
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 rounded-full bg-[#1E3A5F] overflow-hidden flex items-center justify-center text-white text-[10px]">
+                            {tx.project.title[0]}
+                          </div>
+                          <span className="text-[11px] font-black text-gray-900">{tx.project.title}</span>
+                        </div>
+                      </td>
+                      <td className="px-4 py-3 text-[10px] font-bold text-gray-500 uppercase">{tx.method}</td>
+                      <td className="px-4 py-3 text-[11px] font-black text-gray-900">${Number(tx.amount).toLocaleString()}</td>
+                      <td className="px-4 py-3">
+                        <div className={`mx-auto w-fit px-2 py-0.5 rounded-full text-[9px] font-black capitalize ${
+                          tx.status === 'completed' ? 'bg-[#1E3A5F]/10 text-[#1E3A5F]' :
+                          tx.status === 'pending' ? 'bg-amber-50 text-amber-700' :
+                          'bg-gray-100 text-gray-500'
+                        }`}>
+                          {tx.status}
+                        </div>
+                      </td>
+                      <td className="px-4 py-3 text-[10px] text-gray-400">
+                        {new Date(tx.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+                      </td>
                     </tr>
-                  </thead>
-                  <tbody className="divide-y divide-gray-50/50">
-                    {transactions.map(tx => (
-                      <tr key={tx.id} className="group hover:bg-gray-50 transition-colors">
-                        <td className="px-4 py-4">
-                          <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-full bg-[#1E3A5F] overflow-hidden flex items-center justify-center text-white text-[10px]">
-                              {tx.project?.title?.[0] || "?"}
-                            </div>
-                            <span className="text-[11px] font-black text-gray-900">{tx.project?.title || "Unknown"}</span>
-                          </div>
-                        </td>
-                        <td className="px-4 py-3 text-[10px] font-bold text-gray-500 uppercase">{tx.method}</td>
-                        <td className="px-4 py-3 text-[11px] font-black text-gray-900">${Number(tx.amount).toLocaleString()}</td>
-                        <td className="px-4 py-3">
-                          <div className={`mx-auto w-fit px-2 py-0.5 rounded-full text-[9px] font-black capitalize ${
-                            tx.status === 'completed' ? 'bg-[#1E3A5F]/10 text-[#1E3A5F]' :
-                            tx.status === 'pending' ? 'bg-amber-50 text-amber-700' :
-                            'bg-gray-100 text-gray-500'
-                          }`}>
-                            {tx.status}
-                          </div>
-                        </td>
-                        <td className="px-4 py-3 text-[10px] text-gray-400">
-                          {new Date(tx.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>
