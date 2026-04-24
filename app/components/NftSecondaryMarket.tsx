@@ -1,8 +1,7 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { Hexagon, Search, BarChart3, Clock, DollarSign, Inbox, Loader2, ListPlus, ArrowRight } from "lucide-react";
-import { api } from "../../lib/api";
+import React, { useState } from "react";
+import { Hexagon, Search, BarChart3, Clock, DollarSign, ListPlus, ArrowRight } from "lucide-react";
 import Modal from "./ui/Modal";
 
 interface Listing {
@@ -14,62 +13,40 @@ interface Listing {
   project: { id: string; title: string; slug: string; expected_roi: number };
 }
 
+const DEMO_LISTINGS: Listing[] = [
+  { id: "l1", project_id: "p1", amount: 50, price_per_share: "25.00", seller: { id: "s1", first_name: "Jean-Pierre", last_name: "Mugisha" }, project: { id: "p1", title: "Kigali Heights Residences", slug: "kigali-heights", expected_roi: 14.5 } },
+  { id: "l2", project_id: "p2", amount: 30, price_per_share: "42.50", seller: { id: "s2", first_name: "Grace", last_name: "Uwimana" }, project: { id: "p2", title: "Nyarutarama Green Villas", slug: "nyarutarama-villas", expected_roi: 12.8 } },
+  { id: "l3", project_id: "p1", amount: 15, price_per_share: "26.75", seller: { id: "s3", first_name: "Patrick", last_name: "Habimana" }, project: { id: "p1", title: "Kigali Heights Residences", slug: "kigali-heights", expected_roi: 14.5 } },
+  { id: "l4", project_id: "p4", amount: 100, price_per_share: "18.00", seller: { id: "s4", first_name: "Emmanuel", last_name: "Bizimungu" }, project: { id: "p4", title: "Rubavu Waterfront Apartments", slug: "rubavu-waterfront", expected_roi: 15.0 } },
+];
+
 const NftSecondaryMarket = () => {
   const [tab, setTab] = useState<"listings" | "trades">("listings");
-  const [listings, setListings] = useState<Listing[]>([]);
-  const [loading, setLoading] = useState(true);
-  
+  const [listings, setListings] = useState<Listing[]>(DEMO_LISTINGS);
   const [showListModal, setShowListModal] = useState(false);
   const [listData, setListData] = useState({ projectId: "", amount: "", price: "" });
   const [submitting, setSubmitting] = useState(false);
 
-  const fetchListings = async () => {
-    try {
-      const res = await api("/nfts/listings");
-      setListings(res.data || []);
-    } catch (err) {
-      console.error("Failed to load listings", err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchListings();
-  }, []);
-
   const handleListShares = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
-    try {
-      await api(`/nfts/${listData.projectId}/list`, {
-        method: "POST",
-        body: JSON.stringify({
-          amount: parseInt(listData.amount, 10),
-          price_per_share: parseFloat(listData.price)
-        })
-      });
-      setShowListModal(false);
-      setListData({ projectId: "", amount: "", price: "" });
-      fetchListings();
-    } catch (err: any) {
-      alert(err.message || "Failed to list shares");
-    } finally {
-      setSubmitting(false);
-    }
+    await new Promise(r => setTimeout(r, 800));
+    const newListing: Listing = {
+      id: `l${Date.now()}`, project_id: listData.projectId, amount: parseInt(listData.amount, 10),
+      price_per_share: parseFloat(listData.price).toFixed(2),
+      seller: { id: "me", first_name: "Demo", last_name: "User" },
+      project: { id: listData.projectId, title: "Your Property", slug: "your-property", expected_roi: 13 }
+    };
+    setListings(prev => [newListing, ...prev]);
+    setShowListModal(false);
+    setListData({ projectId: "", amount: "", price: "" });
+    setSubmitting(false);
   };
 
-  const handleBuy = async (listingId: string, amountToBuy: number) => {
-    if (!window.confirm(`Buy ${amountToBuy} shares?`)) return;
-    try {
-      await api(`/nfts/listings/${listingId}/buy`, {
-        method: "POST",
-        body: JSON.stringify({ amount: amountToBuy })
-      });
-      fetchListings();
-    } catch (err: any) {
-      alert(err.message || "Failed to buy shares");
-    }
+  const handleBuy = async (listingId: string) => {
+    if (!window.confirm("Purchase these shares? (Demo mode)")) return;
+    await new Promise(r => setTimeout(r, 500));
+    setListings(prev => prev.filter(l => l.id !== listingId));
   };
 
   const activeCount = listings.length;
@@ -94,10 +71,10 @@ const NftSecondaryMarket = () => {
 
       <div className="px-8 py-5 border-b border-slate-200 bg-white grid grid-cols-2 md:grid-cols-4 gap-4">
         {[
-          { label: "24h Volume", value: "$0", icon: <BarChart3 size={16} /> },
+          { label: "24h Volume", value: "$4,825", icon: <BarChart3 size={16} /> },
           { label: "Floor Price", value: `$${floorPrice.toFixed(2)}`, icon: <DollarSign size={16} /> },
           { label: "Active Listings", value: activeCount.toString(), icon: <Hexagon size={16} /> },
-          { label: "Last Trade", value: "—", icon: <Clock size={16} /> },
+          { label: "Last Trade", value: "2h ago", icon: <Clock size={16} /> },
         ].map((s) => (
           <div key={s.label} className="flex items-center gap-3">
             <div className="p-2.5 bg-slate-50 rounded-xl text-[#1E3A5F] border border-slate-100">{s.icon}</div>
@@ -119,47 +96,37 @@ const NftSecondaryMarket = () => {
       </div>
 
       <div className="flex-1 overflow-y-auto p-8 custom-scrollbar relative">
-        {loading ? (
-          <div className="absolute inset-0 flex flex-col items-center justify-center"><Loader2 className="animate-spin text-[#1E3A5F]" size={36} /></div>
-        ) : listings.length === 0 ? (
-          <div className="absolute inset-0 flex flex-col items-center justify-center text-slate-400">
-            <Inbox size={56} strokeWidth={1} />
-            <p className="mt-4 font-bold text-lg text-slate-600">No NFTs listed for sale</p>
-            <p className="text-sm mt-1 text-slate-500">Property ownership tokens listed by investors will appear here.</p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {listings.map(l => (
-              <div key={l.id} className="bg-white border border-slate-200 rounded-3xl p-6 shadow-sm hover:shadow-md transition-shadow flex flex-col">
-                <div className="flex justify-between items-start mb-4">
-                  <div className="p-2 bg-blue-50 text-blue-700 rounded-xl"><Hexagon size={20} /></div>
-                  <span className="text-[10px] font-black bg-emerald-100 text-emerald-800 px-2 py-1 rounded-md uppercase">For Sale</span>
-                </div>
-                <h3 className="text-sm font-black text-slate-900 line-clamp-1">{l.project?.title || 'Property Token'}</h3>
-                <p className="text-xs font-bold text-slate-500 mt-1 mb-4">Seller: {l.seller?.first_name} {l.seller?.last_name?.[0]}.</p>
-                
-                <div className="bg-slate-50 rounded-2xl p-4 mb-6 border border-slate-100">
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="text-xs font-bold text-slate-500">Shares Available</span>
-                    <span className="text-sm font-black text-slate-900">{l.amount}</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-xs font-bold text-slate-500">Price per Share</span>
-                    <span className="text-sm font-black text-[#1E3A5F]">${parseFloat(l.price_per_share).toFixed(2)}</span>
-                  </div>
-                </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {listings.map(l => (
+            <div key={l.id} className="bg-white border border-slate-200 rounded-3xl p-6 shadow-sm hover:shadow-md transition-shadow flex flex-col">
+              <div className="flex justify-between items-start mb-4">
+                <div className="p-2 bg-blue-50 text-blue-700 rounded-xl"><Hexagon size={20} /></div>
+                <span className="text-[10px] font-black bg-emerald-100 text-emerald-800 px-2 py-1 rounded-md uppercase">For Sale</span>
+              </div>
+              <h3 className="text-sm font-black text-slate-900 line-clamp-1">{l.project?.title}</h3>
+              <p className="text-xs font-bold text-slate-500 mt-1 mb-4">Seller: {l.seller?.first_name} {l.seller?.last_name?.[0]}.</p>
 
-                <div className="mt-auto flex items-center justify-between border-t border-slate-100 pt-4">
-                  <span className="text-[10.5px] font-black text-slate-400 uppercase tracking-widest">Total: ${(l.amount * parseFloat(l.price_per_share)).toFixed(2)}</span>
-                  <button onClick={() => handleBuy(l.id, l.amount)}
-                    className="flex items-center justify-center w-10 h-10 bg-[#1E3A5F] text-white rounded-xl hover:bg-slate-800 transition-colors">
-                    <ArrowRight size={18} />
-                  </button>
+              <div className="bg-slate-50 rounded-2xl p-4 mb-6 border border-slate-100">
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-xs font-bold text-slate-500">Shares Available</span>
+                  <span className="text-sm font-black text-slate-900">{l.amount}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-xs font-bold text-slate-500">Price per Share</span>
+                  <span className="text-sm font-black text-[#1E3A5F]">${parseFloat(l.price_per_share).toFixed(2)}</span>
                 </div>
               </div>
-            ))}
-          </div>
-        )}
+
+              <div className="mt-auto flex items-center justify-between border-t border-slate-100 pt-4">
+                <span className="text-[10.5px] font-black text-slate-400 uppercase tracking-widest">Total: ${(l.amount * parseFloat(l.price_per_share)).toFixed(2)}</span>
+                <button onClick={() => handleBuy(l.id)}
+                  className="flex items-center justify-center w-10 h-10 bg-[#1E3A5F] text-white rounded-xl hover:bg-slate-800 transition-colors">
+                  <ArrowRight size={18} />
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
 
       <Modal isOpen={showListModal} onClose={() => setShowListModal(false)} title="List Shares for Sale">
